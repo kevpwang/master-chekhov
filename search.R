@@ -47,30 +47,25 @@ search_period <- function() {
   View(results)
 }
 
-drive_download(file = "https://docs.google.com/spreadsheets/u/1/d/1IwFAsVlEMyFg_4zVZhx-r2gsNnFeZr5wjTlk0BA8LR8/edit?usp=drive_web&ouid=104147344569562764703",
+#### download & clean master chekhov ####
+
+# see googledrive.tidyverse.org to set up Drive auth token
+
+drive_download(file = "https://docs.google.com/spreadsheets/d/175IPYz78t-qcZiTJy4G5yDme58sDaBe-t9-6ZeF95a8/edit#gid=625787912",
                path = "master_chekhov.csv",
                type = "csv",
                overwrite = TRUE)
 
-master_chekhov <- read_csv("master_chekhov.csv",
-                           col_types = cols(
-                             Label = col_character(),
-                             Format = col_character(),
-                             Number = col_character(),
-                             Period = col_double(),
-                             Composer = col_character(),
-                             Work = col_character(),
-                             Performers = col_character(),
-                             Time = col_double()
-                             )
-                           ) %>% 
-  select(-`X9`) %>% 
+master_chekhov <- read.csv("master_chekhov.csv") %>% 
   clean_names() %>% 
   drop_na() %>% 
+  
+  # reorder columns to match AC template for easy ctrl-V
+  
   select(period, composer, work, performers, label, format, number, time)
+
+# remove diacritics so that you can find Fauré by searching "Faure"
 
 master_chekhov <- data.frame(lapply(master_chekhov, function(x) {
   stringi::stri_trans_general(x, "Latin-ASCII")
   }))
-
-
